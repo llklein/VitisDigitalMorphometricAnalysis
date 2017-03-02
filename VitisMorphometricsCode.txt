@@ -1,0 +1,279 @@
+######CHECK FOR LANDMARK ACCURACY
+#Necessary packages
+library(ggplot2)
+
+#Execute Landmark check
+resolution=50
+
+for(i in list.files()) { 
+
+print(i)
+
+data <- read.csv(i, header=TRUE)
+
+len <- length(data$Y)
+
+overall.table <- matrix(nrow=len/17, ncol=(17*2)+1)
+
+overall.length <- len/17
+
+for(j in c(1:overall.length)) {
+
+print(j)
+	
+sub.data <- as.matrix(data[ (1+17*(j-1)):((1+17*(j-1))+16), 4:5])
+
+overall.table[j,1:2] <- sub.data[1, 1:2]
+overall.table[j,3:4] <- sub.data[2, 1:2]
+overall.table[j,5:6] <- sub.data[3, 1:2]
+overall.table[j,7:8] <- sub.data[4, 1:2]
+overall.table[j,9:10] <- sub.data[5, 1:2]
+overall.table[j,11:12] <- sub.data[6, 1:2]
+overall.table[j,13:14] <- sub.data[7, 1:2]
+overall.table[j,15:16] <- sub.data[8, 1:2]
+overall.table[j,17:18] <- sub.data[9, 1:2]
+overall.table[j,19:20] <- sub.data[10, 1:2]
+overall.table[j,21:22] <- sub.data[11, 1:2]
+overall.table[j,23:24] <- sub.data[12, 1:2]
+overall.table[j,25:26] <- sub.data[13, 1:2]
+overall.table[j,27:28] <- sub.data[14, 1:2]
+overall.table[j,29:30] <- sub.data[15, 1:2]
+overall.table[j,31:32] <- sub.data[16, 1:2]
+overall.table[j,33:34] <- sub.data[17, 1:2]
+}
+
+graph <- as.data.frame(overall.table)
+
+colnames(graph) <- c("x1","y1","x2","y2","x3","y3","x4","y4","x5","y5","x6","y6","x7","y7","x8","y8","x9","y9","x10","y10","x11","y11","x12","y12","x13","y13","x14","y14","x15","y15","x16","y16","x17","y17")
+
+vein_colour <- "mediumpurple3"
+margin_colour <- "forestgreen"
+
+p <- ggplot(graph, aes(x=x1, y=y1, xend=x12, yend=y12))
+
+plot <- p + geom_segment(colour=margin_colour) + geom_segment(aes(x=x12, y=y12, xend=x10, yend=y10), colour=margin_colour) + geom_segment(aes(x=x10, y=y10, xend=x8, yend=y8), colour=margin_colour) + geom_segment(aes(x=x8, y=y8, xend=x6, yend=y6), colour=margin_colour) + geom_segment(aes(x=x6, y=y6, xend=x4, yend=y4), colour=margin_colour) + geom_segment(aes(x=x4, y=y4, xend=x2, yend=y2), colour=margin_colour) + geom_segment(aes(x=x2, y=y2, xend=x3, yend=y3), colour=margin_colour) + geom_segment(aes(x=x3, y=y3, xend=x5, yend=y5), colour=margin_colour) + geom_segment(aes(x=x5, y=y5, xend=x7, yend=y7), colour=margin_colour) + geom_segment(aes(x=x7, y=y7, xend=x9, yend=y9), colour=margin_colour) + geom_segment(aes(x=x9, y=y9, xend=x11, yend=y11), colour=margin_colour) + geom_segment(aes(x=x11, y=y11, xend=x1, yend=y1), colour=margin_colour) + geom_segment(aes(x=x1, y=y1, xend=x13, yend=y13), colour=vein_colour) + geom_segment(aes(x=x1, y=y1, xend=x14, yend=y14), colour=vein_colour) + geom_segment(aes(x=x1, y=y1, xend=x15, yend=y15), colour=vein_colour) + geom_segment(aes(x=x1, y=y1, xend=x16, yend=y16), colour=vein_colour) + geom_segment(aes(x=x1, y=y1, xend=x17, yend=y17), colour=vein_colour) + geom_segment(aes(x=x16, y=y16, xend=x11, yend=y11), colour=vein_colour) + geom_segment(aes(x=x17, y=y17, xend=x12, yend=y12), colour=vein_colour) + theme_bw() + coord_fixed(ratio=1) 
+
+ggsave(plot,filename=paste("plot_",i,".png",sep=""))
+}
+
+#####GENERALIZED PROCRUSTES ANALYSIS
+#Convert data into a format in which each leaf is assigned a single row, with its 17 landmarks as columns.
+
+#Identify total length of the dataset
+len <- length(data$X)
+
+#Create table with rows to accommodate each leaf and a column for the label id
+overall.table <- matrix(nrow=len/17, ncol=(17*2)+1)
+
+#Calculate how many interations the loop will have to iterate 
+overall.length <- len/17
+
+#Initiate loop to reformat data. It will iterate, as a count of j, from 1 to the total number of leaves. Repeat for all leaves.
+for(j in c(1:overall.length)) {
+
+print(j)
+
+sub.data <- as.matrix(data[ (1+17*(j-1)):((1+17*(j-1))+16), 2:4])
+
+overall.table[j,1] <- sub.data[1, 1]
+overall.table[j,2:3] <- sub.data[1, 2:3]
+overall.table[j,4:5] <- sub.data[2, 2:3]
+overall.table[j,6:7] <- sub.data[3, 2:3]
+overall.table[j,8:9] <- sub.data[4, 2:3]
+overall.table[j,10:11] <- sub.data[5, 2:3]
+overall.table[j,12:13] <- sub.data[6, 2:3]
+overall.table[j,14:15] <- sub.data[7, 2:3]
+overall.table[j,16:17] <- sub.data[8, 2:3]
+overall.table[j,18:19] <- sub.data[9, 2:3]
+overall.table[j,20:21] <- sub.data[10, 2:3]
+overall.table[j,22:23] <- sub.data[11, 2:3]
+overall.table[j,24:25] <- sub.data[12, 2:3]
+overall.table[j,26:27] <- sub.data[13, 2:3]
+overall.table[j,28:29] <- sub.data[14, 2:3]
+overall.table[j,30:31] <- sub.data[15, 2:3]
+overall.table[j,32:33] <- sub.data[16, 2:3]
+overall.table[j,34:35] <- sub.data[17, 2:3]
+}
+
+#Assign column names
+colnames(overall.table) <- c("label", "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4", "x5", "y5", "x6", "y6", "x7", "y7", "x8", "y8", "x9", "y9", "x10", "y10", "x11", "y11", "x12", "y12", "x13", "y13", "x14", "y14", "x15", "y15", "x16", "y16", "x17", "y17")
+
+write.table(overall.table, "reformat.txt")
+
+#####
+
+#General Procrustes Analysis - required packages
+library(shapes)
+
+#Specify landmark number (k), landmark dimensions (m), and number of samples (n)
+k <- 17
+m <- 2
+n <- 
+
+#Read in data with associated parameters
+
+data <- read.in("reformat_JustXY.txt",k,m)
+
+#Perform procrustes analysis, allow reflection
+GPA <- procGPA(data, reflect=TRUE)
+
+#Look at the procrustes PCs, the eigenleaves
+shapepca(GPA)
+
+#Packages necessary for PCA visualization. Use with file containing PC scores and individual information.
+library(ggplot2)
+library(devtools)
+library(ellipse)
+library(roxygen2)
+source_url("https://raw.github.com/low-decarie/FAAV/master/r/stat-ellipse.R")
+
+#PC visualization
+p <- ggplot(data, aes(PC1, PC2, colour=species))
+p + geom_point(size=2.5, alpha=0.75) + scale_colour_manual(values=c("purple4","green4"))+ theme_bw() + stat_ellipse(size=2, alpha=0.75)
+
+#Visualize Mean genotype example
+geno <- "588188"
+
+sub <- subset(data, common==geno)
+mean <- colMeans(sub[10:43])
+mean <- as.data.frame(t(mean))
+
+size=1
+alpha=0.2
+colour="dodgerblue"
+
+m_size=2
+m_alpha=1
+m_colour="black"
+
+p <- ggplot(data=sub, aes(x=x2, y=y2, xend=x3, yend=y3))
+p + geom_segment(size=size, alpha=alpha, colour=colour) + 
+geom_segment(data=sub, aes(x=x3, y=y3, xend=x5, yend=y5), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x5, y=y5, xend=x7, yend=y7), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x7, y=y7, xend=x9, yend=y9), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x9, y=y9, xend=x11, yend=y11), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x11, y=y11, xend=x1, yend=y1), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x1, y=y1, xend=x12, yend=y12), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x1, y=y1, xend=x12, yend=y12), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x12, y=y12, xend=x10, yend=y10), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x10, y=y10, xend=x8, yend=y8), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x8, y=y8, xend=x6, yend=y6), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x6, y=y6, xend=x4, yend=y4), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x4, y=y4, xend=x2, yend=y2), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x1, y=y1, xend=x16, yend=y16), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x16, y=y16, xend=x9, yend=y9), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x16, y=y16, xend=x11, yend=y11), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x1, y=y1, xend=x17, yend=y17), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x17, y=y17, xend=x12, yend=y12), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x17, y=y17, xend=x10, yend=y10), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x1, y=y1, xend=x14, yend=y14), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x1, y=y1, xend=x15, yend=y15), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x14, y=y14, xend=x5, yend=y5), size=size, alpha=alpha, colour=colour) +
+geom_segment(data=sub, aes(x=x15, y=y15, xend=x6, yend=y6), size=size, alpha=alpha, colour=colour) +
+
+
+
+geom_segment(data=mean, aes(x=x2, y=y2, xend=x3, yend=y3), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x3, y=y3, xend=x5, yend=y5), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x5, y=y5, xend=x7, yend=y7), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x7, y=y7, xend=x9, yend=y9), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x9, y=y9, xend=x11, yend=y11), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x11, y=y11, xend=x1, yend=y1), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x1, y=y1, xend=x12, yend=y12), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x1, y=y1, xend=x12, yend=y12), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x12, y=y12, xend=x10, yend=y10), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x10, y=y10, xend=x8, yend=y8), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x8, y=y8, xend=x6, yend=y6), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x6, y=y6, xend=x4, yend=y4), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x4, y=y4, xend=x2, yend=y2), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x1, y=y1, xend=x16, yend=y16), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x16, y=y16, xend=x9, yend=y9), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x16, y=y16, xend=x11, yend=y11), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x1, y=y1, xend=x17, yend=y17), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x17, y=y17, xend=x12, yend=y12), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x17, y=y17, xend=x10, yend=y10), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x1, y=y1, xend=x14, yend=y14), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x1, y=y1, xend=x15, yend=y15), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x14, y=y14, xend=x5, yend=y5), size=m_size, alpha=m_alpha, colour=m_colour) +
+geom_segment(data=mean, aes(x=x15, y=y15, xend=x6, yend=y6), size=m_size, alpha=m_alpha, colour=m_colour) +
+
+scale_y_reverse() + 
+
+coord_fixed() +
+
+theme(axis.line=element_blank(),
+      axis.text.x=element_blank(),
+      axis.text.y=element_blank(),
+      axis.ticks=element_blank(),
+      axis.title.x=element_blank(),
+      axis.title.y=element_blank(),
+      legend.position="none",
+      panel.background=element_blank(),
+      panel.border=element_blank(),
+      panel.grid.major=element_blank(),
+      panel.grid.minor=element_blank(),
+      plot.background=element_blank())
+      
+geno_file <- paste(geno, ".jpg", sep="")      
+ggsave(geno_file)
+
+#####ELLIPTICAL FOURIER ANALYSIS
+#Necessary packages
+library(Momocs)
+library(MASS)
+library(ggplot2)
+library(ellipse)
+
+#Function to convert NEF to COE
+#Found here: http://www.inside-r.org/packages/cran/Momocs/docs/nef2Coe
+NEF2COE<-function (nef.path){
+  nef <- readLines(nef.path)
+  HARMO.l <- grep(pattern = "HARMO", nef)
+  nb.h <- as.numeric(substring(nef[HARMO.l], 8))
+  nef <- nef[-(1:HARMO.l)]
+  nb.coo <- length(nef)/(nb.h + 1)
+  coo.i <- 1:nb.coo
+  coo.beg <- (coo.i - 1) * (nb.h + 1) + 1
+  coo.end <- coo.beg + nb.h
+  res <- matrix(NA, nrow = nb.coo, ncol = nb.h * 4,
+      dimnames = list(nef[coo.beg], paste(rep(LETTERS[1:4], each = nb.h),
+      1:nb.h, sep = "")))
+  for (i in seq(along = coo.i)) {
+    nef.i <- nef[(coo.beg[i]+1):coo.end[i]]
+    x <- as.numeric(unlist(strsplit(nef.i, " ")))
+    x1<-x[!is.na(x)]
+    a.i<-x1[seq(1,length(x1),4)]
+    b.i<-x1[seq(2,length(x1),4)]
+    c.i<-x1[seq(3,length(x1),4)]
+    d.i<-x1[seq(4,length(x1),4)]
+    res[i, ]<-c(a.i,b.i,c.i,d.i)
+  }
+  return(Coe(res,method="eFourier"))}
+  
+#Import the NEF object and convert to coe using NEF2COE
+morpho <- NEF2COE("./NEFS.txt")
+
+#Visualize PCA space by genotype 
+dudi.plot(mobot_pca, 1, cex.points=0, col.nei=genotype_cols, col.star=genotype_cols, col.chull=genotype_cols, col.ellipse=genotype_cols, cellipse=1, title=NA, legend=FALSE, rug=FALSE, boxes=FALSE, palette=genotype_cols, nr.shp=8, nc.shp=6)
+
+#Visualize Eigenleaves/PCs
+PC.contrib(mobot_pca, lwd=4, borders=c("darkgreen","gray","purple2"))
+
+#Calculate mean shapes and visualize
+avgs <- meanShapes(mobot)
+
+#Example genotype: 588160 average
+tps.iso(avgs$B_50, avgs$B_50, cont=FALSE, iso.levels=0, shp.col=c("#2d004b"), shp.border=c("black"), shp.lwd=c(5,5))
+
+#####LINEAR DISCRIMINANT ANALYSIS
+#Necessary packages
+library(MASS)
+library(topicmodels)
+library(ggplot2)
+library(reshape2)
+
+#lda as a function of all the Procrustes components lda_spe <- lda(species~x1+y1+x2+y2+x3+y3+x4+y4+x5+y5+x6+y6+x7+y7+x8+y8+x9+y9+x10+y10+x11+y11+x12+y12+x13+y13+x14+y14+x15+y15+x16+y16+x17+y17, data)
+
+#Predict the species each leaf belongs to using the LDA 
+spe_table <- t(table(predict(lda_spe, type="class")$class, data$species))
+spe_table
